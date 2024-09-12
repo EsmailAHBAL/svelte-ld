@@ -1,11 +1,12 @@
 <script>
-  import Header from "./Header.svelte";
+  import { page } from "$app/stores";
   import "../app.css";
 </script>
 
 <div class="app bg-white max-w-7xl mx-auto">
   <main>
-    <slot />
+    {$page.data.session?.user ? "loogd" : "no"}
+    <slot></slot>
   </main>
 
   <footer>

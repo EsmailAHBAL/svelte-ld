@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String  @map("user_id") @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model User {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username      String       @unique
+  emailVerified DateTime?    @map("email_verified")
+  image         String?
+  feeds         Feed[] // Changed from 'feed' to 'feeds' to match plural naming convention
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  Session       Session[]
+  Account       Account[]
+  setting       UserSetting?
+}
+
+enum Theme {
+  dark
+  ligth
+}
+
+model UserSetting {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  onboarding Boolean @default(false)
+  theme      Theme   @default(ligth)
+  id_user    String  @unique @db.Uuid
+  user       User    @relation(fields: [id_user], references: [id])
+  local      Local   @relation(fields: [localId], references: [id])
+  localId    String  @db.VarChar(20)
+}
+
+model Local {
+  id            String        @unique @db.VarChar(20)
+  language_code String
+  country       String
+  format_native String
+  native_name   String
+  common_name   String?
+  script        String
+  UserSetting   UserSetting[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id") @db.Uuid
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+enum FeedType {
+  YOUTUBECHANNEL
+}
+
+enum VISIBILITY {
+  public
+  private
+  unlisted
+}
+
+model Feed {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  feedItems  FeedItem[] // Changed 'feedItem' to 'feedItems' to match plural naming convention
+  user       User       @relation(fields: [userId], references: [id])
+  visibility VISIBILITY // Fixed typo from 'visibilty' to 'visibility'
+  userId     String     @db.Uuid
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model FeedItem {
+  id             Int           @id @default(autoincrement()) // Changed @id() to @id @default(autoincrement())
+  feed           Feed          @relation(fields: [feedId], references: [id])
+  feedId         String        @db.Uuid
+  name           String
+  description    String?
+  feedItemMeta   FeedItemMeta? @relation(fields: [feedItemMetaId], references: [id])
+  feedItemMetaId String? // Made this field nullable to match optional relation
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model FeedItemMeta {
+  id        String     @id @default(uuid())
+  originId  String // Fixed camel case to 'originId'
+  type      FeedType
+  feedItems FeedItem[] // Changed 'feed_item' to 'feedItems' to match plural naming convention
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}

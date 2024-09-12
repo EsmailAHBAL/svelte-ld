@@ -1,0 +1,47 @@
+[
+  {
+    "id": "EN_US",
+    "language_code": "en",
+    "country": "US",
+    "format_native": "English (United States)",
+    "native_name": "English",
+    "common_name": "American English",
+    "script": "Latin"
+  },
+  {
+    "id": "AR_SA",
+    "language_code": "ar",
+    "country": "SA",
+    "format_native": "العربية (السعودية)",
+    "native_name": "العربية",
+    "common_name": "Saudi Arabic",
+    "script": "Arabic"
+  },
+  {
+    "id": "FR_FR",
+    "language_code": "fr",
+    "country": "FR",
+    "format_native": "Français (France)",
+    "native_name": "Français",
+    "common_name": "French",
+    "script": "Latin"
+  },
+  {
+    "id": "ES_ES",
+    "language_code": "es",
+    "country": "ES",
+    "format_native": "Español (España)",
+    "native_name": "Español",
+    "common_name": "Spanish",
+    "script": "Latin"
+  },
+  {
+    "id": "ZH_CN",
+    "language_code": "zh",
+    "country": "CN",
+    "format_native": "中文 (中国)",
+    "native_name": "中文",
+    "common_name": "Chinese",
+    "script": "Han"
+  }
+]
